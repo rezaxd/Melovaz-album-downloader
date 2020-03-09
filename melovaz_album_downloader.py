@@ -26,11 +26,13 @@ print("[*] Getting album musics url...")
 musics_urls = inf_album.select('.audioplayer-source')
 print("[*] Done!\n")
 
+os.mkdir(album_title)
+
 print("[*] Starting download musics...")
 for i in range(len(album_musics)):
     print("[*] Downloading %s..."%album_musics[i]['data-title'])
     music_download = re.get(musics_urls[i]['data-src'])
-    with open('%s.mp3'%album_musics[i]['data-title'], 'wb') as music:
+    with open('%s/%s.mp3'%(album_title, album_musics[i]['data-title']), 'wb') as music:
         music.write(music_download.content)
     print("[*] %s Downloaded successfully!"%album_musics[i]['data-title'])
     print("")    
@@ -41,14 +43,15 @@ print("[*] Creating zip file, as '%s.zip'"%album_title)
 with ZipFile("%s.zip"%album_title, "w") as music_zip_file:
     for each_music in album_musics:
         print("[*] Adding %s.mp3 \t into %s.zip..."%(each_music['data-title'], album_title))
-        music_zip_file.write('%s.mp3'%each_music['data-title'])
+        music_zip_file.write('%s/%s.mp3'%(album_title, each_music['data-title']))
 print("[*] Done!\n")
 print("[*] Deleting music files...")
 
 try:
     for m in album_musics:
         print("[*] Deleting %s.mp3..."%m['data-title'])
-        os.remove('%s.mp3'%m['data-title'])
+        os.remove('%s/%s.mp3'%(album_title, m['data-title']))
+    os.rmdir(album_title)
     print("[*] Done!")
 except:
     print("[*] Cant Delete music files...")
